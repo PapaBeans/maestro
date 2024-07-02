@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .result-block {
+            border: 2px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333; /* Adjust as per your color scheme */
+        }
+        .result-content {
+            margin-top: 10px;
+            color: #666; /* Adjust as per your color scheme */
+        }
+        .result-footer {
+            margin-top: 10px;
+            font-style: italic;
+            color: #888; /* Adjust as per your color scheme */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Maestro Task Results</h1>
+        </header>
+        <main class="main">
+            <section id="results">
+                <h2>Maestro Results</h2>
+                <div id="resultsContainer">
+                    {% for result in results %}
+                    <div class="result-block" style="background-color: {{ result.color }};">
+                        <strong class="result-title">{{ result.title }}</strong>
+                        <small class="result-time">{{ result.time }}</small>
+                        <div class="result-content">{{ result.content }}</div>
+                        {% if result.footer %}
+                        <small class="result-footer">{{ result.footer }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+        <main>
+            
+        </main>
+        <a href="{{ url_for('index') }}" class="back-link">Go back</a>
+    </div>
+</body>
+</html>

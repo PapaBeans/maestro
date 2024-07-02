@@ -7,23 +7,115 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="sidebar">
         <header>
             <h1>Maestro Task Orchestrator</h1>
         </header>
-        <main>
-            <form action="/" method="post">
-                <label for="objective">Enter your objective:</label>
-                <textarea id="objective" name="objective" rows="4" required></textarea>
-                <button type="submit">Submit</button>
-            </form>
-            {% if results %}
-                <section id="results">
-                    <h2>Results</h2>
-                    <p>{{ results }}</p>
-                </section>
-            {% endif %}
-        </main>
+        <form id="dynamicForm" action="/" method="post" onsubmit="prepareForm()">
+            <label for="objective">Enter your objective:</label>
+            <textarea id="objective" name="objective" rows="4" required></textarea>
+            <div class="form-row">
+                <div class="file-selection-container">
+                    <label for="selected_file">Select a file:</label>
+                    <select id="selected_file" name="selected_file" required onchange="updateUIElements();">
+                        <option value="">--Select a file--</option>
+                        {% for file in files %}
+                            <option value="{{ file }}" {% if file == selected_file %}selected{% endif %}>{{ file }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div id="uiElementsContainer">
+                <!-- Dynamic UI elements for maestro module settings will be added here on file selection -->
+            </div>
+            <button id="submit" type="submit">Orchestrate!</button>
+        </form>
     </div>
+    <div class="resizer"></div>
+    <main class="main">
+        <section id="progress">
+            <h2>Task Progress</h2>
+            <div id="progressContainer">
+                <!-- Dynamic progress updates will appear here as they are polled from startProgressPolling -->
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        // Websockets for realtime updates from the maestro-module(s)
+        const socket = io();
+
+        // Receive updates from the [maestro module(s)->flask app.py] and display them in the UI
+        socket.on('update_progress', function(update) {
+            const progressContainer = document.getElementById('progressContainer');
+            const div = document.createElement('div');
+            div.classList.add('progress-update');
+            div.style.backgroundColor = update.color;
+            div.innerHTML = `
+                <strong>${update.title}</strong>
+                <small>${update.time}</small>
+                <p>${update.content}</p>
+                <small>${update.footer}</small>
+            `;
+            progressContainer.appendChild(div);
+            
+        });
+        // Renders the input args for the selected module as UI elements for running with options
+        function updateUIElements() {
+            const selectedFile = document.getElementById('selected_file').value;
+            const container = document.getElementById('uiElementsContainer');
+            container.innerHTML = ''; // Clear existing elements
+            if (selectedFile) {
+                fetch('/get_ui_elements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ import_name: selectedFile })
+                })
+                .then(response => response.json())
+                .then(elements => {
+                    elements.forEach(element => {
+                        const div = document.createElement('div');
+                        div.classList.add('form-group');
+                        if (element.type === 'checkbox') {
+                            div.innerHTML = `
+                                <label>${element.label}</label>
+                                <input type="checkbox" id="${element.id}" name="${element.id}" value="true" onchange="updateHiddenField('${element.id}')">
+                                <input type="hidden" id="hidden_${element.id}" name="${element.id}" value="False">
+                            `;
+                        } else if (element.type === 'textbox') {
+                            div.innerHTML = `<label>${element.label}</label><input type="text" id="${element.id}" name="${element.id}">`;
+                        }
+                        container.appendChild(div);
+                    });
+                });
+            }
+        }
+        // Acts to ensure we pass a False flag if the dynamic ui element is not checked/toggled
+        function updateHiddenField(id) {
+            const checkbox = document.getElementById(id);
+            const hiddenField = document.getElementById(`hidden_${id}`);
+            hiddenField.value = checkbox.checked ? 'True' : 'False';
+        }
+
+        function prepareForm() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                const hiddenField = document.getElementById(`hidden_${checkbox.id}`);
+                hiddenField.value = checkbox.checked ? 'True' : 'False';
+            });
+        }
+
+        // Make the filepath textbox read only unless they have `want_file_path` checked
+        document.getElementById('want_file_path').addEventListener('change', function() {
+            var filepathInput = document.getElementById('file_path');
+            if (this.checked) {
+                filepathInput.removeAttribute('readonly');
+            } else {
+                filepathInput.setAttribute('readonly', 'readonly');
+            }
+        });
+    </script>
 </body>
 </html>

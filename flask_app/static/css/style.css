@@ -1,64 +1,137 @@
-/* Basic styling for the Flask app UI */
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    display: flex;
     margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
 }
 
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
+.sidebar {
+    width: 20%;
+    min-width: 15%;
+    background-color: #2B2B2B;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+.main {
+    flex-grow: 1;
+    background-color: #252525;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 header {
-    background: #50a3a2;
-    color: #ffffff;
-    padding-top: 30px;
-    min-height: 70px;
-    border-bottom: #076585 3px solid;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 header h1 {
-    text-align: center;
-    margin: 0;
-    padding-bottom: 10px;
+    font-size: 1.8rem;
+    color: #76b5c5;
 }
 
-nav {
-    background: #444;
-    color: #ffffff;
-    text-align: center;
-    padding: 5px;
-}
-
-nav ul {
-    margin: 0;
-    padding: 0;
-}
-
-nav ul li {
-    display: inline;
-    margin-right: 10px;
-}
-
-nav ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-main {
-    padding: 20px;
-}
-
-footer {
-    background: #444;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    position: fixed;
-    left: 0;
-    bottom: 0;
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     width: 100%;
+}
+
+.form-group {
+    padding: 2px;
+}
+
+label {
+    font-size: 0.9rem;
+    color: #A0A0A0;
+    align-self: flex-start;
+}
+
+textarea,
+input[type="text"],
+select {
+    background-color: #3C3C3C;
+    border: 1px solid #4A4A4A;
+    border-radius: 5px;
+    padding: 8px;
+    padding-right: 0px;
+    color: #E0E0E0;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+}
+
+textarea {
+    max-width: 100%;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: #76b5c5;
+}
+
+button {
+    background-color: #106571;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    color: #FFFFFF;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+}
+
+button:hover {
+    background-color: #4db749;
+}
+
+#progress {
+    margin-top: 20px;
+}
+
+#progress h2 {
+    font-size: 1.4rem;
+    color: #76b5c5;
+}
+
+#progressContainer {
+    margin-top: 15px;
+    border-top: 1px solid #4A4A4A;
+    padding-top: 10px;
+}
+
+.progress-update {
+    background-color: #3C3C3C;
+    border: 1px solid #4A4A4A;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.progress-update strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.progress-update p {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: #A0A0A0;
+    white-space: pre-line;
+}
+
+.progress-update small {
+    font-size: 0.75rem;
+    color: #808080;
 }
